@@ -1,6 +1,5 @@
 package cat.itb.m06.uf2.ConnexionsBD;
 
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -23,7 +22,7 @@ public class ConnexioMySQL {
         try {
             connection.close();
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            System.out.println("ERROR AL CERRAR LA CONEXION: " + throwables.getMessage());
         }
     }
 }

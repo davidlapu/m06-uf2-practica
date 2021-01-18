@@ -31,11 +31,15 @@ public class Main {
             System.out.println("ERROR AL CONECTAR AMB LA BD:" + throwables.getMessage());
         }
 
-        e2InsertarProductes();
-        e3InsertarEmpleats();
+        e2InsertarProductos();
+        e3InsertarEmpleados();
         e4ActualizarClientes();
-        e5ConsultarClient();
-        //e6ConsultarEmpleat();
+        e5ConsultarCliente();
+        e6ConsultarEmpleado();
+        e7ConsultarProducto();
+        e8EliminarCliente();
+        e9EliminarEmpleado();
+        e10EliminarProducto();
 
         ConnexioMySQL.closeConnection();
     }
@@ -66,41 +70,67 @@ public class Main {
             System.out.println("ERROR de E/S, al operar " + e.getMessage());
         } catch (SQLException throwables) {
             System.out.println("ERROR AL EJECUTAR EL SCRIPT: " + throwables.getMessage());
-            throwables.printStackTrace();
         }
     }
 
-    public void e2InsertarProductes() {
-        producteCrud.insertarProducte(new Producte(300388, "RH GUIDE TO PADDLE"));
-        producteCrud.insertarProducte(new Producte(400552, "RH GUIDE TO BOX"));
-        producteCrud.insertarProducte(new Producte(400333, "ACE TENNIS BALLS-10 PACK"));
+    public void e2InsertarProductos() {
+        producteCrud.insert(new Producte(300388, "RH GUIDE TO PADDLE"));
+        producteCrud.insert(new Producte(400552, "RH GUIDE TO BOX"));
+        producteCrud.insert(new Producte(400333, "ACE TENNIS BALLS-10 PACK"));
     }
 
-    private void e3InsertarEmpleats() {
-        empleatCrud.insertarEmpleat(new Empleat(4885, "'BORREL'", "'EMPLEAT'", 7902,
+    private void e3InsertarEmpleados() {
+        empleatCrud.insert(new Empleat(4885, "'BORREL'", "'EMPLEAT'", 7902,
                 "'1981-12-25'", 104000, null, 30));
-        empleatCrud.insertarEmpleat(new Empleat(8772, "'PUIG'", "'VENEDOR'", 7698,
+        empleatCrud.insert(new Empleat(8772, "'PUIG'", "'VENEDOR'", 7698,
                 "'1990-01-23'", 108000, null, 30));
-        empleatCrud.insertarEmpleat(new Empleat(9945, "'FERRER'", "'ANALISTA'", 7698,
+        empleatCrud.insert(new Empleat(9945, "'FERRER'", "'ANALISTA'", 7698,
                 "'1988-05-17'", 169000, 39000, 20));
     }
 
     public void e4ActualizarClientes() {
-        clientCrud.actualizarLimitCredit(104, 20000);
-        clientCrud.actualizarLimitCredit(106, 12000);
-        clientCrud.actualizarLimitCredit(107, 20000);
+        clientCrud.updateCredit(104, 20000);
+        clientCrud.updateCredit(106, 12000);
+        clientCrud.updateCredit(107, 20000);
     }
 
-    public void e5ConsultarClient() {
-        System.out.println(clientCrud.selectClient(106).toString());
+    public void e5ConsultarCliente() {
+        try {
+            System.out.println(clientCrud.select(106).toString());
+        } catch (SQLException throwables) {
+            System.out.println("ERROR AL CONSULTAR CLIENT: " + throwables.getMessage());
+        }
 
     }
 
-    public void e6ConsultarEmpleat() {
-        empleatCrud.select(7788);
+    public void e6ConsultarEmpleado() {
+        try {
+            System.out.println(empleatCrud.select(7788).toString());
+        } catch (SQLException throwables) {
+            System.out.println("ERROR AL CONSULTAR EMPLEADO: " + throwables.getMessage());
+        }
+
     }
 
-    public void e7ConsultarProducte() {
-
+    public void e7ConsultarProducto() {
+        try {
+            System.out.println(producteCrud.select(101860));
+        } catch (SQLException throwables) {
+            System.out.println("ERROR AL SELECIONAR PRODUCTO: " + throwables.getMessage());
+        }
     }
+
+    public void e8EliminarCliente() {
+        clientCrud.delete(109);
+    }
+
+    public void e9EliminarEmpleado() {
+        empleatCrud.delete(4885);
+    }
+
+    public void e10EliminarProducto() {
+        producteCrud.delete(400552);
+    }
+
+
 }

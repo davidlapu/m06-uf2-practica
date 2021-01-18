@@ -9,32 +9,29 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Client_CRUD {
-    public void actualizarLimitCredit(int clientCod, double limitCredit){
+    public void updateCredit(int clientCod, double limitCredit) {
         try {
-            String sql = "UPDATE CLIENT SET LIMIT_CREDIT = ? WHERE CLIENT_COD = ?";
-            PreparedStatement sentencia = ConnexioMySQL.getConnection().prepareStatement(sql);
+            PreparedStatement preparedStatement = ConnexioMySQL.getConnection()
+                    .prepareStatement("UPDATE CLIENT SET LIMIT_CREDIT = ? WHERE CLIENT_COD = ?");
 
-            sentencia.setDouble(1,limitCredit);
-            sentencia.setInt(2,clientCod);
+            preparedStatement.setDouble(1, limitCredit);
+            preparedStatement.setInt(2, clientCod);
 
 
-            int filas = sentencia.executeUpdate();
-            System.out.println(filas + "filas actualizadas");
-            sentencia.close();
+            int filas = preparedStatement.executeUpdate();
+            System.out.println(filas + " filas actualizadas");
+            preparedStatement.close();
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            System.out.println("ERROR AL ACTUALIZAR EL CREDITO: " + throwables.getMessage());
         }
     }
 
-    public Client selectClient(int id) {
+    public Client select(int id) throws SQLException {
         Client client = new Client();
+        Statement sentencia = ConnexioMySQL.getConnection().createStatement();
+        ResultSet result = sentencia.executeQuery("SELECT * FROM CLIENT WHERE CLIENT_COD = " + id);
 
-        try {
-            Statement sentencia = ConnexioMySQL.getConnection().createStatement();
-            String sql = "SELECT * FROM CLIENT WHERE CLIENT_COD = " + id;
-            ResultSet result = sentencia.executeQuery(sql);
-
-            result.next();
+        if (result.next()) {
             client.setClientCod(result.getInt(1));
             client.setNom(result.getString(2));
             client.setAdreca(result.getString(3));
@@ -46,17 +43,37 @@ public class Client_CRUD {
             client.setReprCod(result.getInt(9));
             client.setLimitCredit(result.getDouble(10));
             client.setObservacions(result.getString(11));
-
+        } else {
             result.close();
             sentencia.close();
-
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            throw new SQLException("Cliente no encontrado " + id);
         }
+
+        result.close();
+        sentencia.close();
 
         return client;
     }
 
+    public void delete(int id) {
+        try {
+            PreparedStatement preparedStatement = ConnexioMySQL.getConnection()
+                    .prepareStatement("DELETE FROM CLIENT WHERE CLIENT_COD = ?");
 
+            preparedStatement.setInt(1, id);
+            int res = preparedStatement.executeUpdate();
+
+            if (res > 0) {
+                System.out.println("Eliminado cliente con id: " + id);
+            } else {
+                System.out.println("Cliente no con id " + id + " no existe");
+            }
+
+            preparedStatement.close();
+        } catch (SQLException throwables) {
+            System.out.println("ERROR AL ELIMINAR EL CLIENTE " + id + " " + throwables.getMessage());
+        }
+
+    }
 
 }

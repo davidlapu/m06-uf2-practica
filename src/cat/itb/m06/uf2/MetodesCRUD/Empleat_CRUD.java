@@ -9,32 +9,61 @@ import java.sql.Statement;
 
 public class Empleat_CRUD {
 
-    public void insertarEmpleat(Empleat e){
+    public void insert(Empleat e) {
         try {
-            Statement sentencia = ConnexioMySQL.getConnection().createStatement();
-            String sql = "INSERT INTO EMP VALUES (" + e.getEmpNo() + ", " + e.getCognom() +
+            Statement statement = ConnexioMySQL.getConnection().createStatement();
+            statement.executeUpdate("INSERT INTO EMP VALUES (" + e.getEmpNo() + ", " + e.getCognom() +
                     ", " + e.getOfici() + ", " + e.getCap() + ", " + e.getDataAlta() +
-                    ", " + e.getSalari() + ", " + e.getCommisio() + ", " + e.getDepNo() + ")";
-            sentencia.executeUpdate(sql);
-            sentencia.close();
-            System.out.println("Empleat insertat amb exit");
+                    ", " + e.getSalari() + ", " + e.getCommisio() + ", " + e.getDepNo() + ")");
+            statement.close();
+            System.out.println("Empleado " + e.getEmpNo() + " insertado con exito");
         } catch (SQLException throwables) {
-            throwables.printStackTrace();//TODO
+            System.out.println("ERROR AL INSERTAR EMPLEAT: " + throwables.getMessage());
         }
 
     }
 
-    public void select(int id) {
+    public Empleat select(int id) throws SQLException {
+        Empleat empleat = new Empleat();
+
+        Statement statement = ConnexioMySQL.getConnection().createStatement();
+        ResultSet result = statement.executeQuery("SELECT * FROM EMP WHERE EMP_NO = " + id);
+
+        if (result.next()) {
+            empleat.setEmpNo(result.getInt("EMP_NO"));
+            empleat.setCognom(result.getString("COGNOM"));
+            empleat.setOfici(result.getString("OFICI"));
+            empleat.setCap(result.getInt("CAP"));
+            empleat.setDataAlta(result.getString("DATA_ALTA"));
+            empleat.setSalari(result.getInt("SALARI"));
+            empleat.setCommisio(result.getInt("COMISSIO"));
+            empleat.setDepNo(result.getInt("DEPT_NO"));
+        } else {
+            result.close();
+            statement.close();
+            throw new SQLException("Empleat " + id + "no encontrado");
+        }
+
+        result.close();
+        statement.close();
+        return empleat;
+    }
+
+    public void delete(int id) {
         try {
             Statement statement = ConnexioMySQL.getConnection().createStatement();
-            String sql = "SELECT * FROM EMP WHERE EMP_NO = " + id;
-            ResultSet result = statement.executeQuery(sql);
-            result.next();
 
-            System.out.println("Name: " + result.getString(2)); //TODO
+            int res = statement.executeUpdate("DELETE FROM EMP WHERE EMP_NO = " + id);
+            if (res > 0) {
+                System.out.println("Eliminado empleado con id: " + id);
+            } else {
+                System.out.println("Empleado no con id " + id + " no existe");
+            }
 
+            statement.close();
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            System.out.println("ERROR AL ELIMINAR EL EMPLEADO " + id + " " + throwables.getMessage());
         }
+
     }
 }
